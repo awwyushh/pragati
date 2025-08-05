@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { CalendarDays, Scan, BookOpen, Handshake } from "lucide-react"
-import { WeatherDisplay } from "@/components/weather-display"
+import LiveWeatherCard from "@/components/live-weather-card"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { ProtectedPageHeader } from "@/components/protected-page-header"
 
@@ -40,7 +40,7 @@ export default function AgriculturePage() {
       <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
         <div id="weather" className="grid gap-4">
           <h2 className="text-2xl font-bold sr-only">Weather Conditions</h2>
-          <WeatherDisplay temperature={28} description="sunny with light breeze" icon="sunny" location="Your Village" />
+          <LiveWeatherCard/>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-4">

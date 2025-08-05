@@ -55,19 +55,19 @@ export default function EducationPage() {
     <>
       <ProtectedPageHeader title="Education" />
       <div className="relative min-h-screen">
-        {/* Background image with slight transparency */}
+        {/* Background image with minimal transparency */}
         <div
-          className="absolute inset-0 z-0 bg-cover bg-center opacity-10"
+          className="absolute inset-0 z-0 bg-no-repeat bg-fixed bg-center opacity-60" // Reduced transparency
           style={{
-            backgroundImage: "url('/your-background.jpg')", // Replace with your image path
+            backgroundImage: "url('/education.jpeg')", // Replace with your image path
           }}
         />
-
+        
         {/* Foreground content */}
         <div className="relative z-10 flex flex-col items-center gap-4 p-4 md:gap-6 md:p-6">
           {educationNavItems.map((item) => (
             <Link key={item.title} href={item.href} className="block w-full max-w-3xl">
-              <Card className="hover:border-primary w- hover:shadow-md transition-all duration-200 cursor-pointer">
+              <Card className="hover:border-primary w-full hover:shadow-md transition-all duration-200 cursor-pointer">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-lg font-medium">{item.title}</CardTitle>
                   {item.icon && <item.icon className="h-6 w-6 text-primary" />}
