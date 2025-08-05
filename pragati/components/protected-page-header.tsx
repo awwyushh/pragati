@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
-import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 
@@ -13,8 +12,9 @@ interface ProtectedPageHeaderProps {
 
 export function ProtectedPageHeader({ title, backHref }: ProtectedPageHeaderProps) {
   return (
-    <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-      <SidebarTrigger className="-ml-1" />
+    <div className="flex items-center gap-2">
+      {" "}
+      {/* Removed header tag as it's now in AuthFlowWrapper */}
       {backHref && (
         <>
           <Button variant="ghost" size="icon" className="h-7 w-7" asChild>
@@ -28,6 +28,6 @@ export function ProtectedPageHeader({ title, backHref }: ProtectedPageHeaderProp
       )}
       <h1 className="text-xl font-semibold">{title}</h1>
       {/* Any other header content like language selector or user profile can go here */}
-    </header>
+    </div>
   )
 }

@@ -1,9 +1,9 @@
-import { ProtectedPageHeader } from "@/components/protected-page-header" // Import the new header component
+import { ProtectedPageHeader } from "@/components/protected-page-header"
 
 export default function WomenChildSOSPage() {
   return (
     <>
-      <ProtectedPageHeader title="Women & Child SOS" /> {/* Use the new header component */}
+      <ProtectedPageHeader title="Women & Child SOS" />
       <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
         <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
           <h2 className="text-lg font-semibold">Emergency Support</h2>

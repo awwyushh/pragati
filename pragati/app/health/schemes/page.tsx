@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ProtectedPageHeader } from "@/components/protected-page-header" // Import the new header component
+import { ProtectedPageHeader } from "@/components/protected-page-header"
 
 const healthSchemes = [
   {
@@ -37,8 +37,7 @@ const healthSchemes = [
 export default function HealthSchemesPage() {
   return (
     <>
-      <ProtectedPageHeader title="Health Schemes" backHref="/health" />{" "}
-      {/* Use the new header component with back button */}
+      <ProtectedPageHeader title="Health Schemes" backHref="/health" />
       <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
         <Card>
           <CardHeader>
