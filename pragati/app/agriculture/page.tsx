@@ -1,53 +1,48 @@
 "use client"
 
-import { SidebarTrigger } from "@/components/ui/sidebar"
 import Link from "next/link"
 import { CalendarDays, Scan, BookOpen, Handshake } from "lucide-react"
 import { WeatherDisplay } from "@/components/weather-display"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card" // Import Card components
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { ProtectedPageHeader } from "@/components/protected-page-header"
 
 const agricultureNavItems = [
   {
     title: "AI Scanner",
     href: "/agriculture/ai-scanner",
     icon: Scan,
-    description: "Analyze crop health from images.", // One-line description
+    description: "Analyze crop health from images.",
   },
   {
     title: "Crop Calendar",
     href: "/agriculture/crop-calendar",
     icon: CalendarDays,
-    description: "View seasonal crop planting guides.", // One-line description
+    description: "View seasonal crop planting guides.",
   },
   {
     title: "Guidelines",
     href: "/agriculture/guidelines",
     icon: BookOpen,
-    description: "Access farming tips and best practices.", // One-line description
+    description: "Access farming tips and best practices.",
   },
   {
     title: "Schemes",
     href: "/agriculture/schemes",
     icon: Handshake,
-    description: "Explore government support programs.", // One-line description
+    description: "Explore government support programs.",
   },
 ]
 
 export default function AgriculturePage() {
   return (
     <>
-      <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-        <SidebarTrigger className="-ml-1" />
-        <h1 className="text-xl font-semibold">Agriculture</h1>
-      </header>
+      <ProtectedPageHeader title="Agriculture" />
       <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
-        {/* Weather Conditions Card at the very top */}
         <div id="weather" className="grid gap-4">
           <h2 className="text-2xl font-bold sr-only">Weather Conditions</h2>
           <WeatherDisplay temperature={28} description="sunny with light breeze" icon="sunny" location="Your Village" />
         </div>
 
-        {/* Navigation Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-4">
           {agricultureNavItems.map((item) => (
             <Link key={item.title} href={item.href} className="block">
