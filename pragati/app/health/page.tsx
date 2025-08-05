@@ -6,6 +6,8 @@ import { AmbulanceIcon as FirstAid, Baby, Syringe, Handshake } from "lucide-reac
 import { MapPlaceholder } from "@/components/map-placeholder"
 import { ProtectedPageHeader } from "@/components/protected-page-header"
 
+import { useEffect, useState } from "react"
+
 const healthNavItems = [
   {
     title: "First-Aid Guides",
@@ -34,15 +36,30 @@ const healthNavItems = [
 ]
 
 export default function HealthPage() {
+    const [location, setLocation] = useState(null);
+
+  useEffect(() => {
+    const storedLocation = localStorage.getItem('userLocation');
+    if (storedLocation) {
+      setLocation(JSON.parse(storedLocation));
+    }
+  }, []);
   return (
     <>
       <ProtectedPageHeader title="Health" />
       <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+      {location ? (
+        <p>
+          Your Location: Latitude - {location.latitude}, Longitude - {location.longitude}
+        </p>
+      ) : (
+        <p>Location data not available.</p>
+      )}
         <MapPlaceholder
           title="Nearest Hospitals"
           description="Locate nearby hospitals and emergency services."
           mapQuery="map of hospitals in rural india"
-        />
+          />
 
         <Card className="col-span-full">
           <CardHeader>

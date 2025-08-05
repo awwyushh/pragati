@@ -26,7 +26,7 @@ export function ProtectedPageHeader({ title, backHref }: ProtectedPageHeaderProp
           <Separator orientation="vertical" className="mr-2 h-4" />
         </>
       )}
-      <h1 className="text-xl font-semibold">{title}</h1>
+      <h1 className="text-6xl font-semibold">{title}</h1>
       {/* Any other header content like language selector or user profile can go here */}
     </div>
   )

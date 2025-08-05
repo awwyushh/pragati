@@ -4,7 +4,7 @@ import { CardDescription, Card, CardContent, CardHeader, CardTitle } from "@/com
 import { SOSButton } from "@/components/sos-button"
 import { NoticeMarquee } from "@/components/notice-marquee"
 import Link from "next/link"
-import { Newspaper, HeartPulse, Leaf, GraduationCap, Settings } from "lucide-react"
+import { Newspaper, HeartPulse, Leaf, GraduationCap } from "lucide-react"
 import { ProtectedPageHeader } from "@/components/protected-page-header"
 
 const dashboardNavItems = [
@@ -32,12 +32,6 @@ const dashboardNavItems = [
     icon: Newspaper,
     description: "Stay updated with local and national news.",
   },
-  {
-    title: "Settings",
-    href: "/settings",
-    icon: Settings,
-    description: "Manage your profile and app settings.",
-  },
 ]
 
 export default function DashboardPage() {
@@ -50,7 +44,7 @@ export default function DashboardPage() {
         <div className="grid gap-4">
           <Card className="col-span-full">
             <CardHeader>
-              <CardTitle>Welcome!</CardTitle>
+              <CardTitle className="text-4xl font-extrabold">Welcome!</CardTitle>
               <p className="text-sm text-muted-foreground">
                 This is your personalized dashboard. Navigate using the sidebar or the quick access cards below.
               </p>
@@ -63,15 +57,15 @@ export default function DashboardPage() {
           </Card>
           <Card className="col-span-full">
             <CardHeader>
-              <CardTitle>Quick Access</CardTitle>
+              <CardTitle className="text-3xl">Quick Access</CardTitle>
               <CardDescription>Navigate directly to key sections of the application.</CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {dashboardNavItems.map((item) => (
                 <Link key={item.title} href={item.href} className="block">
                   <Card className="h-full flex flex-col justify-between hover:border-primary hover:shadow-md transition-all duration-200 cursor-pointer">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-lg font-medium">{item.title}</CardTitle>
+                      <CardTitle className="text-2xl font-bold">{item.title}</CardTitle>
                       {item.icon && <item.icon className="h-6 w-6 text-primary" />}
                     </CardHeader>
                     <CardContent>
