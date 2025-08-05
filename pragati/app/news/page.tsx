@@ -3,13 +3,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
-import { Badge } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 
-// Define the type for a single news article based on newsdata.io API response
 interface NewsArticle {
   title: string
   link: string
@@ -20,7 +18,6 @@ interface NewsArticle {
   category?: string[]
 }
 
-// Define the type for the API response
 interface NewsApiResponse {
   status: string
   totalResults: number
@@ -35,10 +32,10 @@ export default function NewsPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
 
-  const currentLang = searchParams.get("lang") || "en" // Default to English
-  const country = "in" // Hardcode country to India
+  const currentLang = searchParams.get("lang") || "en"
+  const country = "in"
 
-  const API_KEY = "pub_2796b7cf898c4b24a7754e2318e85945" // Ensure this environment variable is set
+  const API_KEY = "pub_2796b7cf898c4b24a7754e2318e85945"
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -68,7 +65,7 @@ export default function NewsPage() {
       try {
         const response = await fetch(
           `https://newsdata.io/api/1/news?apikey=${API_KEY}&language=${currentLang}&country=${country}`,
-          { cache: "no-store" }, // Ensure fresh data on client-side fetch
+          { cache: "no-store" },
         )
 
         if (!response.ok) {
@@ -80,7 +77,8 @@ export default function NewsPage() {
         if (data.status === "success" && data.results) {
           setNews(data.results)
         } else {
-          throw new Error(data.status === "error" ? data.results[0].message : "No news found or API error.")
+          // Fixed: removed access to data.results[0].message because NewsArticle has no 'message' property
+          throw new Error(data.status === "error" ? "API returned an error." : "No news found or API error.")
         }
       } catch (e: any) {
         console.error("Error fetching news:", e)
@@ -91,12 +89,20 @@ export default function NewsPage() {
     }
 
     fetchNews()
-  }, [currentLang, API_KEY]) // Re-fetch when language changes
+  }, [currentLang, API_KEY])
+
+  // Proper Image onError handler with type
+  const handleImageError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    event.currentTarget.onerror = null // Prevent infinite loop
+    event.currentTarget.src = "/placeholder.svg?height=192&width=384"
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 sm:p-6 lg:p-8">
       <header className="text-center mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-50 sm:text-4xl lg:text-5xl">Indian News</h1>
+        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-50 sm:text-4xl lg:text-5xl">
+          Indian News
+        </h1>
         <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">
           Stay updated with the latest headlines from India.
         </p>
@@ -178,24 +184,20 @@ export default function NewsPage() {
                 key={article.link}
                 className="w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
               >
-                {article.image_url && (
+                {article.image_url ? (
                   <div className="relative w-full h-48 bg-gray-200 overflow-hidden">
                     <Image
-                      src={article.image_url || "/placeholder.svg"}
+                      src={article.image_url}
                       alt={article.title}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       style={{ objectFit: "cover" }}
                       className="transition-transform duration-300 hover:scale-105"
+                      onError={handleImageError}
                       priority={false}
-                      onError={(e) => {
-                        e.currentTarget.src = "/placeholder.svg?height=192&width=384"
-                        e.currentTarget.srcset = "/placeholder.svg?height=192&width=384"
-                      }}
                     />
                   </div>
-                )}
-                {!article.image_url && (
+                ) : (
                   <div className="relative w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500">
                     <Image
                       src="/placeholder.svg?height=192&width=384"
@@ -206,6 +208,7 @@ export default function NewsPage() {
                     />
                   </div>
                 )}
+
                 <CardHeader className="p-4">
                   <CardTitle className="text-lg font-bold leading-tight">
                     <Link href={article.link} target="_blank" rel="noopener noreferrer" className="hover:underline">
@@ -222,9 +225,12 @@ export default function NewsPage() {
                   {article.category && article.category.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
                       {article.category.map((cat) => (
-                        <Badge key={cat} variant="secondary" className="capitalize">
+                        <span
+                          key={cat}
+                          className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded px-2 py-0.5 text-xs capitalize"
+                        >
                           {cat}
-                        </Badge>
+                        </span>
                       ))}
                     </div>
                   )}

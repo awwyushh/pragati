@@ -1,36 +1,43 @@
 import Link from "next/link"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { ProtectedPageHeader } from "@/components/protected-page-header"
 
 const healthSchemes = [
   {
     name: "Ayushman Bharat PM-JAY (Pradhan Mantri Jan Arogya Yojana)",
     description:
-      "This is the world's largest publicly funded health assurance scheme, providing coverage of ₹5 lakh per family per year for secondary and tertiary care hospitalization. It aims to provide affordable healthcare to the poor and vulnerable.",
+      "World’s largest health assurance scheme offering ₹5 lakh coverage per family per year for secondary and tertiary care hospitalization.",
   },
   {
     name: "Rashtriya Swasthya Bima Yojana (RSBY)",
     description:
-      "This scheme provides health insurance coverage to families below the poverty line, covering hospitalization expenses up to a certain limit.",
+      "Health insurance for BPL families covering hospitalization expenses up to a fixed limit.",
   },
   {
     name: "National Health Mission (NHM)",
     description:
-      "Aims to provide accessible, affordable, and quality healthcare services to all, especially to the vulnerable populations. It includes a range of free services such as maternal health, child health, and immunisation programs.",
+      "Ensures accessible, affordable, and quality healthcare with services like maternal and child health, and immunisation.",
   },
   {
     name: "Central Government Health Scheme (CGHS)",
     description:
-      "Provides comprehensive healthcare facilities to central government employees, pensioners, and their dependents.",
+      "Comprehensive healthcare for central government employees, pensioners, and dependents.",
   },
   {
     name: "Pradhan Mantri National Dialysis Programme (PMNDP)",
-    description: "Provides free dialysis services to patients in need at public health facilities.",
+    description:
+      "Free dialysis services at public health facilities for patients in need.",
   },
   {
-    name: "National Programme for Prevention and Control of Cancer, Diabetes, Cardiovascular Diseases & Stroke (NPCDCS)",
+    name: "NPCDCS – Cancer, Diabetes, CVD & Stroke",
     description:
-      "Focuses on preventing and controlling non-communicable diseases like cancer, diabetes, and cardiovascular diseases.",
+      "Focuses on preventing and controlling major non-communicable diseases.",
   },
 ]
 
@@ -38,21 +45,27 @@ export default function HealthSchemesPage() {
   return (
     <>
       <ProtectedPageHeader title="Health Schemes" backHref="/health" />
-      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
+      <div className="flex flex-1 flex-col gap-6 p-6 max-w-4xl mx-auto">
         <Card>
           <CardHeader>
-            <CardTitle>Government Schemes for Health</CardTitle>
-            <CardDescription>Explore various government initiatives and health programs.</CardDescription>
+            <CardTitle className="text-2xl font-bold mb-1">Government Schemes for Health</CardTitle>
+            <CardDescription className="text-base">
+              Explore various government initiatives and health programs available to citizens.
+            </CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4">
+          <CardContent className="grid gap-6">
             {healthSchemes.map((scheme, index) => (
               <Link
                 key={index}
                 href="#"
-                className="block border rounded-md p-4 grid gap-2 hover:bg-primary/10 hover:border-primary transition-colors cursor-pointer group"
+                className="block border rounded-md p-6 bg-background/50 hover:border-primary hover:bg-primary/10 transition-colors duration-200 group"
               >
-                <h3 className="font-semibold text-lg group-hover:underline">{scheme.name}</h3>
-                <p className="text-sm text-muted-foreground mt-1">{scheme.description}</p>
+                <h3 className="font-semibold text-lg mb-2 group-hover:underline">
+                  {scheme.name}
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {scheme.description}
+                </p>
               </Link>
             ))}
           </CardContent>

@@ -1,6 +1,12 @@
 "use client"
 
-import { CardDescription, Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  CardDescription,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { SOSButton } from "@/components/sos-button"
 import { NoticeMarquee } from "@/components/notice-marquee"
 import Link from "next/link"
@@ -40,11 +46,12 @@ export default function DashboardPage() {
       <SOSButton />
       <ProtectedPageHeader title="Dashboard" />
       <NoticeMarquee />
-      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
-        <div className="grid gap-4">
-          <Card className="col-span-full">
+      <div className="flex flex-1 flex-col gap-6 p-6 md:gap-10 md:p-8 max-w-5xl mx-auto">
+        <div className="grid gap-6">
+          {/* Welcome Card */}
+          <Card className="col-span-full p-6 md:p-8">
             <CardHeader>
-              <CardTitle className="text-4xl font-extrabold">Welcome!</CardTitle>
+              <CardTitle className="text-4xl font-extrabold mb-2">Welcome!</CardTitle>
               <p className="text-sm text-muted-foreground">
                 This is your personalized dashboard. Navigate using the sidebar or the quick access cards below.
               </p>
@@ -55,25 +62,31 @@ export default function DashboardPage() {
               </p>
             </CardContent>
           </Card>
-          <Card className="col-span-full">
+
+          {/* Quick Access Cards */}
+          <Card className="col-span-full p-6 md:p-8">
             <CardHeader>
-              <CardTitle className="text-3xl">Quick Access</CardTitle>
-              <CardDescription>Navigate directly to key sections of the application.</CardDescription>
+              <CardTitle className="text-3xl mb-1">Quick Access</CardTitle>
+              <CardDescription className="mb-6">
+                Navigate directly to key sections of the application.
+              </CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {dashboardNavItems.map((item) => (
-                <Link key={item.title} href={item.href} className="block">
-                  <Card className="h-full flex flex-col justify-between hover:border-primary hover:shadow-md transition-all duration-200 cursor-pointer">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-2xl font-bold">{item.title}</CardTitle>
-                      {item.icon && <item.icon className="h-6 w-6 text-primary" />}
-                    </CardHeader>
-                    <CardContent>
-                      <CardDescription className="text-sm text-muted-foreground">{item.description}</CardDescription>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
+            <CardContent>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                {dashboardNavItems.map((item) => (
+                  <Link key={item.title} href={item.href} className="block">
+                    <Card className="h-full min-h-[200px] flex flex-col items-center p-8 hover:border-primary hover:shadow-xl transition-all duration-200 cursor-pointer rounded-lg text-center">
+                      <CardTitle className="text-2xl font-bold mb-4">{item.title}</CardTitle>
+                      {item.icon && (
+                        <item.icon className="h-14 w-14 text-primary mb-6" />
+                      )}
+                      <CardDescription className="text-base text-muted-foreground">
+                        {item.description}
+                      </CardDescription>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
             </CardContent>
           </Card>
         </div>

@@ -20,7 +20,7 @@ export default function EducationAskAIPage() {
               <Textarea id="ai-question" placeholder="e.g., What is photosynthesis?" rows={5} />
             </div>
             <Button className="w-fit">Get Answer</Button>
-            <div className="mt-4 p-3 rounded-md bg-muted text-muted-foreground">
+            <div className="mt-4 p-3 rounded-md bg-muted text-background">
               <h4 className="font-semibold">AI Response:</h4>
               <p className="text-sm mt-1">{"(AI response will appear here after you ask a question)"}</p>
             </div>

@@ -53,10 +53,10 @@ export default function MaternalChildHealthPage() {
           <CardContent className="grid gap-4">
             <div className="mb-4">
               <Select onValueChange={setSelectedTrimester} value={selectedTrimester || ""}>
-                <SelectTrigger className="w-full md:w-[250px] bg-white text-foreground border-border">
+                <SelectTrigger className="w-full md:w-[250px] py-5 bg-background text-foreground border-border">
                   <SelectValue placeholder="Select Trimester" />
                 </SelectTrigger>
-                <SelectContent className="bg-white text-foreground border-border">
+                <SelectContent className="bg-background text-foreground border-border">
                   {trimesterData.map((data) => (
                     <SelectItem key={data.trimester} value={data.trimester}>
                       {data.trimester}
