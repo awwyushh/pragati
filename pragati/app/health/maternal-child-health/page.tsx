@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useState } from "react"
 import { ProtectedPageHeader } from "@/components/protected-page-header"
+import { Baby, Utensils, AlertTriangle, Bed, Pill } from "lucide-react"
 
 const trimesterData = [
   {
@@ -38,86 +39,91 @@ const trimesterData = [
 
 export default function MaternalChildHealthPage() {
   const [selectedTrimester, setSelectedTrimester] = useState<string | null>(null)
-
   const currentTrimesterData = trimesterData.find((data) => data.trimester === selectedTrimester)
 
   return (
     <>
       <ProtectedPageHeader title="Maternal & Child Health" backHref="/health" />
-      <div className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Care for Mothers and Children</CardTitle>
-            <CardDescription>Guidance for prenatal care, child development, and common health issues.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="mb-4">
-              <Select onValueChange={setSelectedTrimester} value={selectedTrimester || ""}>
-                <SelectTrigger className="w-full md:w-[250px] py-5 bg-background text-foreground border-border">
-                  <SelectValue placeholder="Select Trimester" />
-                </SelectTrigger>
-                <SelectContent className="bg-background text-foreground border-border">
-                  {trimesterData.map((data) => (
-                    <SelectItem key={data.trimester} value={data.trimester}>
-                      {data.trimester}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {currentTrimesterData ? (
-              <div className="grid gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Diet: What to Eat & Avoid</CardTitle>
-                  </CardHeader>
-                  <CardContent className="grid gap-2">
-                    <div>
-                      <h3 className="font-semibold text-lg text-green-600">Eat:</h3>
-                      <p className="text-sm text-muted-foreground">{currentTrimesterData.eat}</p>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-lg text-destructive">Avoid:</h3>
-                      <p className="text-sm text-muted-foreground">{currentTrimesterData.avoid}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Danger Signs</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">{currentTrimesterData.dangerSigns}</p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Sleep & Posture</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">{currentTrimesterData.sleepPosture}</p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Supplements</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">{currentTrimesterData.supplements}</p>
-                  </CardContent>
-                </Card>
+      <div className="relative min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50">
+        <div className="relative z-10 max-w-7xl mx-auto p-6 md:p-8 space-y-12">
+          <Card className="w-full max-w-4xl mx-auto border-0 shadow-xl bg-white/90 backdrop-blur-sm hover:shadow-2xl transition-all duration-300">
+            <CardHeader className="text-center pb-4">
+              <CardTitle className="flex items-center justify-center gap-3 text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                <Baby className="h-8 w-8 text-pink-600" /> Care for Mothers and Children
+              </CardTitle>
+              <CardDescription className="text-base text-gray-600">
+                Guidance for prenatal care, child development, and common health issues.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid gap-6 p-6">
+              <div className="mb-4 flex justify-center">
+                <Select onValueChange={setSelectedTrimester} value={selectedTrimester || ""}>
+                  <SelectTrigger className="w-full md:w-[300px] py-5 bg-white/80 backdrop-blur-sm text-gray-800 border-blue-200 shadow-md hover:border-blue-300 transition-colors duration-200">
+                    <SelectValue placeholder="Select Trimester" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white/90 backdrop-blur-sm text-gray-800 border-blue-200 shadow-lg">
+                    {trimesterData.map((data) => (
+                      <SelectItem key={data.trimester} value={data.trimester} className="hover:bg-blue-50">
+                        {data.trimester}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            ) : (
-              <p className="text-muted-foreground text-center py-4">
-                Please select a trimester to view detailed information.
-              </p>
-            )}
-          </CardContent>
-        </Card>
+              {currentTrimesterData ? (
+                <div className="grid gap-6">
+                  <Card className="border-0 shadow-md bg-white/80 backdrop-blur-sm">
+                    <CardHeader className="flex flex-row items-center gap-3 pb-2">
+                      <Utensils className="h-6 w-6 text-green-600" />
+                      <CardTitle className="text-xl font-bold text-gray-800">Diet: What to Eat & Avoid</CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid gap-4 p-6 pt-2">
+                      <div>
+                        <h3 className="font-semibold text-lg text-green-600 mb-1">Eat:</h3>
+                        <p className="text-base text-gray-700 leading-relaxed">{currentTrimesterData.eat}</p>
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg text-red-600 mb-1">Avoid:</h3>
+                        <p className="text-base text-gray-700 leading-relaxed">{currentTrimesterData.avoid}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-md bg-white/80 backdrop-blur-sm">
+                    <CardHeader className="flex flex-row items-center gap-3 pb-2">
+                      <AlertTriangle className="h-6 w-6 text-orange-600" />
+                      <CardTitle className="text-xl font-bold text-gray-800">Danger Signs</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6 pt-2">
+                      <p className="text-base text-gray-700 leading-relaxed">{currentTrimesterData.dangerSigns}</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-md bg-white/80 backdrop-blur-sm">
+                    <CardHeader className="flex flex-row items-center gap-3 pb-2">
+                      <Bed className="h-6 w-6 text-blue-600" />
+                      <CardTitle className="text-xl font-bold text-gray-800">Sleep & Posture</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6 pt-2">
+                      <p className="text-base text-gray-700 leading-relaxed">{currentTrimesterData.sleepPosture}</p>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-0 shadow-md bg-white/80 backdrop-blur-sm">
+                    <CardHeader className="flex flex-row items-center gap-3 pb-2">
+                      <Pill className="h-6 w-6 text-purple-600" />
+                      <CardTitle className="text-xl font-bold text-gray-800">Supplements</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6 pt-2">
+                      <p className="text-base text-gray-700 leading-relaxed">{currentTrimesterData.supplements}</p>
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : (
+                <p className="text-gray-600 text-center py-8 text-lg bg-white/80 backdrop-blur-sm rounded-lg shadow-md">
+                  Please select a trimester to view detailed information.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </>
   )

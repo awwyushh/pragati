@@ -15,6 +15,7 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
+      <link rel="manifest" href="/manifest.json" />
       <body className={cn("min-h-screen bg-background font-sans antialiased", inter.className)}>
         <AuthFlowWrapper>{children}</AuthFlowWrapper>
         <Toaster richColors position="top-right" /> {/* ✅ Customize if needed */}

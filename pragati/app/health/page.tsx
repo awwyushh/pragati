@@ -1,14 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { AmbulanceIcon as FirstAid, Baby, Syringe, Handshake } from "lucide-react"
+import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
+import { AmbulanceIcon as FirstAid, Baby, Syringe, Handshake, MapPin } from "lucide-react"
 import { MapPlaceholder } from "@/components/map-placeholder"
 import { ProtectedPageHeader } from "@/components/protected-page-header"
 import { useEffect, useState } from "react"
@@ -18,25 +12,25 @@ const healthNavItems = [
     title: "First-Aid Guides",
     href: "/health/first-aid-guidelines",
     icon: FirstAid,
-    description: "Learn basic first-aid procedures for common injuries.",
+    gradient: "from-red-500 to-orange-500",
   },
   {
     title: "Maternal & Child Health",
     href: "/health/maternal-child-health",
     icon: Baby,
-    description: "Tips and resources for expecting mothers and child care.",
+    gradient: "from-pink-500 to-purple-500",
   },
   {
     title: "Vaccination Alerts",
     href: "/health/vaccination-alerts",
     icon: Syringe,
-    description: "Stay informed about important vaccination schedules and set reminders.",
+    gradient: "from-blue-500 to-cyan-500",
   },
   {
     title: "Government Schemes",
     href: "/health/schemes",
     icon: Handshake,
-    description: "Discover government health and welfare programs.",
+    gradient: "from-green-500 to-teal-500",
   },
 ]
 
@@ -53,48 +47,69 @@ export default function HealthPage() {
   return (
     <>
       <ProtectedPageHeader title="Health" />
-      <div className="flex flex-1 flex-col gap-6 p-4 md:gap-8 md:p-6">
-        <div className="text-sm text-muted-foreground">
-          {location ? (
-            <p>
-              <span className="font-semibold">Your Location:</span> Latitude – {location.latitude}, Longitude –{" "}
-              {location.longitude}
-            </p>
-          ) : (
-            <p className="italic">Location data not available.</p>
-          )}
+      <div className="relative min-h-screen bg-gradient-to-br from-red-50 via-white to-pink-50">
+        <div className="relative z-10 max-w-7xl mx-auto p-6 md:p-8 space-y-12">
+          {/* Location Display */}
+          <div className="flex justify-center text-center">
+            <Card className="w-full max-w-md border-0 shadow-lg bg-white/90 backdrop-blur-sm p-4">
+              <CardContent className="flex items-center justify-center gap-3 text-lg text-gray-700 font-medium">
+                <MapPin className="h-6 w-6 text-blue-600" />
+                {location ? (
+                  <p>
+                    <span className="font-semibold">Your Location:</span> Latitude – {location.latitude}, Longitude –{" "}
+                    {location.longitude}
+                  </p>
+                ) : (
+                  <p className="italic">Location data not available.</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Map Placeholder */}
+          <section>
+            <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Nearest Hospitals</h2>
+            <div className="flex justify-center">
+              <MapPlaceholder
+                title="Nearest Hospitals"
+                description="Locate nearby hospitals and emergency services."
+                mapQuery="map of hospitals in rural india"
+                className="w-full max-w-4xl h-96 rounded-lg shadow-xl border-0 bg-white/90 backdrop-blur-sm"
+              />
+            </div>
+          </section>
+
+          {/* Healthcare Module Navigation */}
+          <section>
+            <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Healthcare Modules</h2>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
+              {healthNavItems.map((item) => (
+                <Link key={item.title} href={item.href} className="block group">
+                  <Card className="h-full p-6 flex flex-col items-center text-center justify-between border-0 shadow-lg bg-white/90 backdrop-blur-sm hover:shadow-xl transition-all duration-300 cursor-pointer relative overflow-hidden">
+                    {/* Gradient overlay on hover */}
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+                    ></div>
+
+                    {item.icon && (
+                      <div
+                        className={`mb-4 p-3 rounded-full bg-gradient-to-r ${item.gradient} text-white shadow-md group-hover:shadow-lg transition-all duration-300 relative z-10`}
+                      >
+                        <item.icon className="h-8 w-8" />
+                      </div>
+                    )}
+                    <CardTitle className="text-xl font-bold text-gray-800 group-hover:text-gray-900 transition-colors duration-200 relative z-10 mb-2">
+                      {item.title}
+                    </CardTitle>
+                    <CardDescription className="mt-2 text-base text-gray-700 leading-relaxed relative z-10">
+                      {item.description}
+                    </CardDescription>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </section>
         </div>
-
-        <MapPlaceholder
-          title="Nearest Hospitals"
-          description="Locate nearby hospitals and emergency services."
-          mapQuery="map of hospitals in rural india"
-        />
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold">Healthcare Module</CardTitle>
-            <CardDescription>Access essential health information and services.</CardDescription>
-          </CardHeader>
-
-          <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {healthNavItems.map((item) => (
-              <Link key={item.title} href={item.href} className="block">
-                <Card className="h-full p-4 flex flex-col items-center text-center hover:shadow-md hover:border-primary transition-all duration-200 cursor-pointer">
-                  {item.icon && (
-                    <div className="mb-4 text-primary">
-                      <item.icon className="h-10 w-10" />
-                    </div>
-                  )}
-                  <CardTitle className="text-lg font-semibold">{item.title}</CardTitle>
-                  <CardDescription className="mt-2 text-sm text-muted-foreground">
-                    {item.description}
-                  </CardDescription>
-                </Card>
-              </Link>
-            ))}
-          </CardContent>
-        </Card>
       </div>
     </>
   )

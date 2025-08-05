@@ -1,94 +1,52 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { CalendarDays } from "lucide-react"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { CalendarDays, Leaf, Ruler } from "lucide-react"
 
-export function CropCalendarCard() {
-  const cropData = [
-    {
-      season: "Kharif (Monsoon)",
-      months: "June – October",
-      crops: ["Rice", "Maize", "Bajra", "Jowar", "Cotton", "Groundnut", "Soybean", "Tur"],
-    },
-    {
-      season: "Rabi (Winter)",
-      months: "October – March",
-      crops: ["Wheat", "Barley", "Mustard", "Chickpea", "Lentil", "Pea"],
-    },
-    {
-      season: "Zaid (Summer)",
-      months: "March – June",
-      crops: ["Watermelon", "Muskmelon", "Cucumber", "Bitter Gourd", "Moong", "Sunflower"],
-    },
-  ]
+interface CropCalendarCardProps {
+  cropName: string
+  landSize: string
+  description: string
+}
 
-  // Initialize selectedSeason to null, so no data is shown initially
-  const [selectedSeason, setSelectedSeason] = useState<string | null>(null)
-
-  // Filter data based on selected season, or show nothing if no season is selected
-  const filteredCropData = selectedSeason ? cropData.filter((entry) => entry.season === selectedSeason) : []
-
+export function CropCalendarCard({ cropName, landSize, description }: CropCalendarCardProps) {
   return (
-    <Card className="bg-orange-100 text-orange-800 shadow-lg">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-lg font-medium">Crop Calendar</CardTitle>
-        <CalendarDays className="h-6 w-6 text-orange-600" />
+    <Card className="h-full flex flex-col justify-between border-0 shadow-xl bg-white/90 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 overflow-hidden relative group">
+      {/* Dynamic gradient overlay based on crop name (example) */}
+      <div
+        className={`absolute inset-0 bg-gradient-to-br ${
+          cropName.toLowerCase().includes("wheat")
+            ? "from-yellow-500 to-orange-500"
+            : cropName.toLowerCase().includes("corn")
+              ? "from-amber-500 to-yellow-600"
+              : cropName.toLowerCase().includes("tomato")
+                ? "from-red-500 to-pink-500"
+                : "from-green-500 to-blue-500"
+        } opacity-5 group-hover:opacity-10 transition-opacity duration-300`}
+      ></div>
+
+      <CardHeader className="relative z-10 pb-4">
+        <CardTitle className="text-3xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-2">
+          {cropName}
+        </CardTitle>
+        <CardDescription className="text-lg text-gray-600 flex items-center gap-2">
+          <Ruler className="h-5 w-5 text-gray-500" /> Land Size: {landSize}
+        </CardDescription>
       </CardHeader>
-      <CardContent>
-        <CardDescription className="text-orange-700 mb-4">Seasonal information for major crops.</CardDescription>
-
-        <div className="mb-4">
-          <Select onValueChange={setSelectedSeason} value={selectedSeason || ""}>
-            <SelectTrigger className="w-[180px] bg-white text-orange-900 border-orange-300">
-              <SelectValue placeholder="Select Season" />
-            </SelectTrigger>
-            <SelectContent className="bg-white text-orange-900 border-orange-300">
-              {cropData.map((entry) => (
-                <SelectItem key={entry.season} value={entry.season}>
-                  {entry.season}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <CardContent className="relative z-10 p-6 pt-0 flex-grow">
+        <p className="text-base text-gray-700 leading-relaxed mb-6">{description}</p>
+        <div className="flex flex-col gap-3">
+          <Button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-3 text-base rounded-lg shadow-md hover:shadow-lg transition-all duration-300">
+            <CalendarDays className="h-5 w-5 mr-2" /> View Schedule
+          </Button>
+          <Button
+            variant="outline"
+            className="w-full border-green-500 text-green-700 hover:bg-green-50 hover:text-green-800 px-6 py-3 text-base rounded-lg shadow-md hover:shadow-lg transition-all duration-300 bg-transparent"
+          >
+            <Leaf className="h-5 w-5 mr-2" /> Crop Details
+          </Button>
         </div>
-
-        {/* Conditionally render the crop data section */}
-        {selectedSeason && filteredCropData.length > 0 ? (
-          <>
-            {/* Table Header for larger screens */}
-            <div className="hidden md:grid grid-cols-[1fr_1fr_2fr] gap-4 pb-2 border-b border-orange-300 font-semibold text-orange-900">
-              <div>Season</div>
-              <div>Months</div>
-              <div>Major Crops</div>
-            </div>
-
-            {/* Responsive Rows */}
-            <div className="grid gap-4 mt-4">
-              {filteredCropData.map((entry, index) => (
-                <div
-                  key={index}
-                  className="grid gap-2 p-3 rounded-md bg-orange-50 border border-orange-200
-                             md:grid-cols-[1fr_1fr_2fr] md:gap-4 md:p-0 md:bg-transparent md:border-0 md:rounded-none"
-                >
-                  {/* Mobile Labels (hidden on md and larger screens) */}
-                  <div className="md:hidden font-semibold text-orange-900">Season:</div>
-                  <div className="font-medium">{entry.season}</div>
-
-                  <div className="md:hidden font-semibold text-orange-900 mt-2">Months:</div>
-                  <div>{entry.months}</div>
-
-                  <div className="md:hidden font-semibold text-orange-900 mt-2">Major Crops:</div>
-                  <div>{entry.crops.join(", ")}</div>
-                </div>
-              ))}
-            </div>
-          </>
-        ) : (
-          // Message when no season is selected or no data for selected season
-          <p className="text-muted-foreground text-center py-4">Please select a season to view crop information.</p>
-        )}
       </CardContent>
     </Card>
   )
