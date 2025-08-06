@@ -4,8 +4,18 @@ import httpx
 import asyncio
 from typing import List, Dict, Any, Optional
 import math
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Nearby Places API", version="1.0.0")
+
+# Add CORS middleware to allow cross-origin requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 class LocationRequest(BaseModel):
     lat: float = Field(..., description="Latitude", ge=-90, le=90)
