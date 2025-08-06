@@ -1,12 +1,15 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import type React from "react"
+
+import { CardDescription, Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Label } from "@/components/ui/label"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
+import { Newspaper } from "lucide-react" // Added for header icon
 
 interface NewsArticle {
   title: string
@@ -27,15 +30,12 @@ interface NewsApiResponse {
 export default function NewsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
-
   const [news, setNews] = useState<NewsArticle[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
-
   const currentLang = searchParams.get("lang") || "en"
   const country = "in"
-
-  const API_KEY = "pub_2796b7cf898c4b24a7754e2318e85945"
+  const API_KEY = "pub_a6c17c5be9584a1e90877da4bbd0c1e9" // Ensure this is handled securely in a real app
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -57,27 +57,22 @@ export default function NewsPage() {
         setLoading(false)
         return
       }
-
       setLoading(true)
       setError(null)
       setNews([])
-
       try {
         const response = await fetch(
           `https://newsdata.io/api/1/news?apikey=${API_KEY}&language=${currentLang}&country=${country}`,
           { cache: "no-store" },
         )
-
         if (!response.ok) {
           const errorData = await response.json()
           throw new Error(errorData.message || `Failed to fetch news: ${response.statusText}`)
         }
-
         const data: NewsApiResponse = await response.json()
         if (data.status === "success" && data.results) {
           setNews(data.results)
         } else {
-          // Fixed: removed access to data.results[0].message because NewsArticle has no 'message' property
           throw new Error(data.status === "error" ? "API returned an error." : "No news found or API error.")
         }
       } catch (e: any) {
@@ -87,41 +82,47 @@ export default function NewsPage() {
         setLoading(false)
       }
     }
-
     fetchNews()
   }, [currentLang, API_KEY])
 
   // Proper Image onError handler with type
   const handleImageError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
     event.currentTarget.onerror = null // Prevent infinite loop
-    event.currentTarget.src = "/placeholder.svg?height=192&width=384"
+    event.currentTarget.src = "/news-article-placeholder.png"
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 sm:p-6 lg:p-8">
-      <header className="text-center mb-8">
-        <h1 className="text-3xl font-extrabold text-gray-900 dark:text-gray-50 sm:text-4xl lg:text-5xl">
-          Indian News
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 p-4 sm:p-6 lg:p-8">
+      <header className="text-center mb-12">
+        <h1 className="flex items-center justify-center gap-3 text-4xl font-extrabold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent sm:text-5xl lg:text-6xl">
+          <Newspaper className="h-10 w-10 text-orange-600" /> Indian News
         </h1>
-        <p className="mt-2 text-lg text-gray-600 dark:text-gray-400">
-          Stay updated with the latest headlines from India.
-        </p>
+        <p className="mt-4 text-lg text-gray-700">Stay updated with the latest headlines from India.</p>
       </header>
 
       {/* Language Selector */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-8 justify-center">
-        <div className="flex items-center gap-2">
-          <Label htmlFor="language-select" className="text-gray-700 dark:text-gray-300">
+      <div className="flex flex-col sm:flex-row gap-4 mb-12 justify-center">
+        <div className="flex items-center gap-4 p-4 rounded-lg bg-white/80 backdrop-blur-sm shadow-md border border-gray-200">
+          <Label htmlFor="language-select" className="text-lg font-medium text-gray-700">
             Language:
           </Label>
           <Select value={currentLang} onValueChange={handleLanguageChange}>
-            <SelectTrigger id="language-select" className="w-[180px]">
+            <SelectTrigger
+              id="language-select"
+              className="w-[180px] py-5 bg-white/80 backdrop-blur-sm text-gray-800 border-orange-200 shadow-sm hover:border-orange-300 transition-colors duration-200"
+            >
               <SelectValue placeholder="Select Language" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="en">English</SelectItem>
-              <SelectItem value="hi">Hindi</SelectItem>
-              <SelectItem value="mr">Marathi</SelectItem>
+            <SelectContent className="bg-white/90 backdrop-blur-sm text-gray-800 border-orange-200 shadow-lg">
+              <SelectItem value="en" className="hover:bg-orange-50">
+                English
+              </SelectItem>
+              <SelectItem value="hi" className="hover:bg-orange-50">
+                Hindi
+              </SelectItem>
+              <SelectItem value="mr" className="hover:bg-orange-50">
+                Marathi
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -129,12 +130,16 @@ export default function NewsPage() {
 
       {loading && (
         <div className="flex items-center justify-center p-4">
-          <Card className="w-full max-w-md text-center">
+          <Card className="w-full max-w-md text-center border-0 shadow-xl bg-white/90 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-xl font-bold">Loading News...</CardTitle>
+              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Loading News...
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>Fetching the latest headlines for you.</CardDescription>
+              <CardDescription className="text-base text-gray-700">
+                Fetching the latest headlines for you.
+              </CardDescription>
             </CardContent>
           </Card>
         </div>
@@ -142,12 +147,12 @@ export default function NewsPage() {
 
       {error && (
         <div className="flex items-center justify-center p-4">
-          <Card className="w-full max-w-md text-center border-red-500">
+          <Card className="w-full max-w-md text-center border-0 shadow-xl bg-white/90 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-xl font-bold text-red-600">Error</CardTitle>
+              <CardTitle className="text-2xl font-bold text-red-600">Error</CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription className="text-red-500">{error}</CardDescription>
+              <CardDescription className="text-red-500 text-base">{error}</CardDescription>
             </CardContent>
           </Card>
         </div>
@@ -155,12 +160,14 @@ export default function NewsPage() {
 
       {!loading && !error && news.length === 0 && (
         <div className="flex items-center justify-center p-4">
-          <Card className="w-full max-w-md text-center">
+          <Card className="w-full max-w-md text-center border-0 shadow-xl bg-white/90 backdrop-blur-sm">
             <CardHeader>
-              <CardTitle className="text-xl font-bold">No News Available</CardTitle>
+              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                No News Available
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <CardDescription>
+              <CardDescription className="text-base text-gray-700">
                 Could not retrieve any news articles for the selected language. Please try a different language.
               </CardDescription>
             </CardContent>
@@ -169,7 +176,7 @@ export default function NewsPage() {
       )}
 
       {!loading && !error && news.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8 max-w-7xl mx-auto">
           {news.map((article) => {
             const formattedDate = article.pubDate
               ? new Date(article.pubDate).toLocaleDateString("en-US", {
@@ -178,16 +185,18 @@ export default function NewsPage() {
                   day: "numeric",
                 })
               : "Date N/A"
-
             return (
               <Card
                 key={article.link}
-                className="w-full max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mx-auto overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
+                className="w-full overflow-hidden border-0 shadow-xl bg-white/90 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 group relative"
               >
+                {/* Gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500 to-red-500 opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+
                 {article.image_url ? (
                   <div className="relative w-full h-48 bg-gray-200 overflow-hidden">
                     <Image
-                      src={article.image_url}
+                      src={article.image_url || "/placeholder.svg"}
                       alt={article.title}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -200,7 +209,7 @@ export default function NewsPage() {
                 ) : (
                   <div className="relative w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500">
                     <Image
-                      src="/placeholder.svg?height=192&width=384"
+                      src="/news-article-placeholder.png"
                       alt="No image available"
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -208,26 +217,25 @@ export default function NewsPage() {
                     />
                   </div>
                 )}
-
-                <CardHeader className="p-4">
-                  <CardTitle className="text-lg font-bold leading-tight">
+                <CardHeader className="p-6 relative z-10">
+                  <CardTitle className="text-xl font-bold leading-tight text-gray-800 group-hover:text-gray-900 transition-colors duration-200">
                     <Link href={article.link} target="_blank" rel="noopener noreferrer" className="hover:underline">
                       {article.title}
                     </Link>
                   </CardTitle>
-                  <CardDescription className="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-3">
+                  <CardDescription className="text-base text-gray-700 mt-2 line-clamp-3">
                     {article.description || "No description available."}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="p-4 pt-0 flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400">
-                  {article.source_id && <span className="font-medium">{article.source_id}</span>}
+                <CardContent className="p-6 pt-0 flex flex-wrap gap-2 text-sm text-gray-600 relative z-10">
+                  {article.source_id && <span className="font-semibold">{article.source_id}</span>}
                   {article.pubDate && <span>• {formattedDate}</span>}
                   {article.category && article.category.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
+                    <div className="flex flex-wrap gap-2 mt-2">
                       {article.category.map((cat) => (
                         <span
                           key={cat}
-                          className="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded px-2 py-0.5 text-xs capitalize"
+                          className="bg-orange-100 text-orange-700 rounded-full px-3 py-1 text-xs font-medium capitalize"
                         >
                           {cat}
                         </span>

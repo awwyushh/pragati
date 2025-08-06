@@ -9,7 +9,6 @@ import { AppSidebar } from "@/components/app-sidebar"
 export function AuthFlowWrapper({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const pathname = usePathname()
-
   const isPublicPath = ["/", "/login", "/language-selection"].includes(pathname)
 
   // Check localStorage only on the client side
@@ -41,7 +40,7 @@ export function AuthFlowWrapper({ children }: { children: React.ReactNode }) {
         <AppSidebar />
         <SidebarInset>
           {/* Place SidebarTrigger here, as it's always within SidebarProvider's context */}
-          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 bg-white/90 backdrop-blur-sm">
             <SidebarTrigger className="-ml-1" />
             {/* The rest of the header content will be handled by individual page components */}
           </header>
