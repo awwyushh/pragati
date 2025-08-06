@@ -1,36 +1,89 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { MapPin } from "lucide-react"
-import Image from "next/image"
+// components/MapComponent.tsx
+"use client"
 
-interface MapPlaceholderProps {
-  title: string
-  description: string
-  mapQuery: string // Used for placeholder image query
+import React, { useEffect, useState } from 'react';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+
+interface Place {
+  name: string;
+  lat: number;
+  lng: number;
+  distance: number;
+  address?: string;
+  phone?: string;
+  website?: string;
+  opening_hours?: string;
 }
 
-export function MapPlaceholder({ title, description, mapQuery }: MapPlaceholderProps) {
+const MapComponent: React.FC = () => {
+  const [places, setPlaces] = useState<Place[]>([]);
+  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number }>({
+    latitude: 19.076,
+    longitude: 72.8777,
+  });
+
+  useEffect(() => {
+    const stored = localStorage.getItem("userLocation");
+    if (stored) {
+      setUserLocation(JSON.parse(stored));
+    }
+  }, []);
+
+  useEffect(() => {
+    fetch('http://localhost:8000/nearby', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        lat: userLocation.latitude,
+        lng: userLocation.longitude,
+        xyz: 'hospital',
+        radius: 3000
+      })
+    })
+      .then(res => res.json())
+      .then((data: Place[]) => setPlaces(data))
+      .catch(err => console.error('Failed to fetch:', err));
+  }, [userLocation]);
+
+  useEffect(() => {
+    if (places.length === 0) return;
+
+    const mapContainer = document.getElementById('map');
+    if (mapContainer && (mapContainer as any)._leaflet_id) {
+      (mapContainer as any)._leaflet_id = null;
+    }
+
+    const map = L.map('map').setView([places[0].lat, places[0].lng], 13);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    places.forEach(place => {
+      const popupContent = `
+        <strong>${place.name}</strong><br/>
+        ${place.address || 'No address'}<br/>
+        ${place.distance.toFixed(1)} meters away<br/>
+        ${place.phone ? `📞 ${place.phone}<br/>` : ''}
+        ${place.website ? `<a href="${place.website}" target="_blank">Visit Website</a>` : ''}
+      `;
+
+      L.marker([place.lat, place.lng])
+        .addTo(map)
+        .bindPopup(popupContent);
+    });
+
+    return () => {
+      map.remove();
+    };
+  }, [places]);
+
   return (
-    <Card className="w-full bg-blue-50 text-blue-900 shadow-lg">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <MapPin className="h-6 w-6 text-primary" /> {title}
-        </CardTitle>
-        <CardDescription className="text-blue-800">{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="relative w-full h-48 rounded-md overflow-hidden border border-border bg-muted">
-          <Image
-            src={`/placeholder.svg?height=200&width=400&query=${encodeURIComponent(mapQuery)}`}
-            alt={`Map of ${title}`}
-            layout="fill"
-            objectFit="cover"
-            className="rounded-md"
-          />
-          <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white text-center p-4">
-            <p className="text-lg font-semibold">Map integration coming soon!</p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
+    <div className="mt-4">
+      <div id="map" style={{ height: '500px', width: '100%' }} className="rounded-lg shadow-lg"></div>
+    </div>
+  );
+};
+
+export default MapComponent;

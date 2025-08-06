@@ -62,27 +62,6 @@ export default function LandingPage() {
   return (
     <div className="flex min-h-screen w-full flex-col bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Sticky Header */}
-      <header className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/90 backdrop-blur-sm supports-[backdrop-filter]:bg-white/60 shadow-sm">
-        <div className="w-full flex justify-center px-4 md:px-6">
-          <div className="flex w-full max-w-screen-lg h-20 items-center justify-between">
-            <Link
-              href="/"
-              className="flex items-center gap-2 text-2xl font-bold bg-gradient-to-r from-blue-900 to-purple-900 bg-clip-text text-transparent"
-            >
-              <Megaphone className="h-8 w-8 text-blue-600" />
-              <span>PRAGATI</span>
-            </Link>
-            <nav className="flex items-center gap-4">
-              <Button
-                asChild
-                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-3 text-base rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
-              >
-                <Link href="/login">Login</Link>
-              </Button>
-            </nav>
-          </div>
-        </div>
-      </header>
 
       <main className="flex-1">
         {/* Hero Section with Image + Overlay */}

@@ -1,11 +1,14 @@
+// app/health/page.tsx
 "use client"
 
 import Link from "next/link"
 import { Card, CardContent, CardDescription, CardTitle } from "@/components/ui/card"
 import { AmbulanceIcon as FirstAid, Baby, Syringe, Handshake, MapPin } from "lucide-react"
-import { MapPlaceholder } from "@/components/map-placeholder"
 import { ProtectedPageHeader } from "@/components/protected-page-header"
 import { useEffect, useState } from "react"
+import dynamic from 'next/dynamic'
+
+const MapComponent = dynamic(() => import('@/components/MapComponent'), { ssr: false })
 
 const healthNavItems = [
   {
@@ -13,24 +16,28 @@ const healthNavItems = [
     href: "/health/first-aid-guidelines",
     icon: FirstAid,
     gradient: "from-red-500 to-orange-500",
+    description: "Basic emergency first-aid instructions and tips.",
   },
   {
     title: "Maternal & Child Health",
     href: "/health/maternal-child-health",
     icon: Baby,
     gradient: "from-pink-500 to-purple-500",
+    description: "Resources and care guidance for mothers and children.",
   },
   {
     title: "Vaccination Alerts",
     href: "/health/vaccination-alerts",
     icon: Syringe,
     gradient: "from-blue-500 to-cyan-500",
+    description: "Timely notifications for important vaccines.",
   },
   {
     title: "Government Schemes",
     href: "/health/schemes",
     icon: Handshake,
     gradient: "from-green-500 to-teal-500",
+    description: "Explore health schemes and benefits for rural citizens.",
   },
 ]
 
@@ -49,7 +56,8 @@ export default function HealthPage() {
       <ProtectedPageHeader title="Health" />
       <div className="relative min-h-screen bg-gradient-to-br from-red-50 via-white to-pink-50">
         <div className="relative z-10 max-w-7xl mx-auto p-6 md:p-8 space-y-12">
-          {/* Location Display */}
+          
+          {/* Location Card */}
           <div className="flex justify-center text-center">
             <Card className="w-full max-w-md border-0 shadow-lg bg-white/90 backdrop-blur-sm p-4">
               <CardContent className="flex items-center justify-center gap-3 text-lg text-gray-700 font-medium">
@@ -66,41 +74,39 @@ export default function HealthPage() {
             </Card>
           </div>
 
-          {/* Map Placeholder */}
+          {/* Map Section */}
           <section>
             <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Nearest Hospitals</h2>
             <div className="flex justify-center">
-              <MapPlaceholder
-                title="Nearest Hospitals"
-                description="Locate nearby hospitals and emergency services."
-                mapQuery="map of hospitals in rural india"
-                className="w-full max-w-4xl h-96 rounded-lg shadow-xl border-0 bg-white/90 backdrop-blur-sm"
-              />
+              <div className="w-full max-w-4xl rounded-lg shadow-xl border-0 bg-white/90 backdrop-blur-sm">
+                <MapComponent />
+              </div>
             </div>
           </section>
 
-          {/* Healthcare Module Navigation */}
+          {/* Healthcare Modules */}
           <section>
             <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Healthcare Modules</h2>
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto">
               {healthNavItems.map((item) => (
                 <Link key={item.title} href={item.href} className="block group">
                   <Card className="h-full p-6 flex flex-col items-center text-center justify-between border-0 shadow-lg bg-white/90 backdrop-blur-sm hover:shadow-xl transition-all duration-300 cursor-pointer relative overflow-hidden">
-                    {/* Gradient overlay on hover */}
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
-                    ></div>
-
+                    {/* Hover Overlay */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+                    
+                    {/* Icon */}
                     {item.icon && (
-                      <div
-                        className={`mb-4 p-3 rounded-full bg-gradient-to-r ${item.gradient} text-white shadow-md group-hover:shadow-lg transition-all duration-300 relative z-10`}
-                      >
+                      <div className={`mb-4 p-3 rounded-full bg-gradient-to-r ${item.gradient} text-white shadow-md group-hover:shadow-lg transition-all duration-300 relative z-10`}>
                         <item.icon className="h-8 w-8" />
                       </div>
                     )}
+
+                    {/* Title */}
                     <CardTitle className="text-xl font-bold text-gray-800 group-hover:text-gray-900 transition-colors duration-200 relative z-10 mb-2">
                       {item.title}
                     </CardTitle>
+
+                    {/* Description */}
                     <CardDescription className="mt-2 text-base text-gray-700 leading-relaxed relative z-10">
                       {item.description}
                     </CardDescription>

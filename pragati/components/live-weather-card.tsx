@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react" // Import useRef
 import Image from "next/image"
-import { Loader2, AlertTriangle, Droplet, Wind, CloudRain, Sun } from "lucide-react"
+import { Loader2, AlertTriangle, Droplet, Wind, CloudRain, Sun, WifiOff } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import gsap from "gsap" // Import GSAP
 
@@ -57,6 +57,8 @@ export default function LiveWeatherCard() {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null)
   const [showAlert, setShowAlert] = useState(false)
   const [alertMessage, setAlertMessage] = useState("")
+  const [isOffline, setIsOffline] = useState(false)
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null)
 
   // Refs for GSAP animations
   const cardRef = useRef(null)
@@ -66,9 +68,115 @@ export default function LiveWeatherCard() {
 
   // Replace with your actual WeatherAPI.com key
   const WEATHER_API_KEY = "37533df0fad946e3be974608250803"
+  
+  // Cache keys
+  const CACHE_KEYS = {
+    WEATHER_DATA: "pragati_weather_data",
+    LOCATION: "pragati_weather_location",
+    LAST_UPDATED: "pragati_weather_last_updated"
+  }
+
+  // Function to save data to local storage
+  const saveToCache = (key: string, data: any) => {
+    try {
+      localStorage.setItem(key, JSON.stringify(data))
+    } catch (error) {
+      console.error(`Failed to save ${key} to cache:`, error)
+    }
+  }
+
+  // Function to get data from local storage
+  const getFromCache = <T,>(key: string): T | null => {
+    try {
+      const data = localStorage.getItem(key)
+      return data ? JSON.parse(data) as T : null
+    } catch (error) {
+      console.error(`Failed to get ${key} from cache:`, error)
+      return null
+    }
+  }
+
+  // Function to check if cached data is still valid (less than 3 hours old)
+  const isCacheValid = (timestamp: string | null): boolean => {
+    if (!timestamp) return false
+    const lastUpdatedTime = new Date(timestamp).getTime()
+    const currentTime = new Date().getTime()
+    const threeHoursInMs = 3 * 60 * 60 * 1000
+    return currentTime - lastUpdatedTime < threeHoursInMs
+  }
+
+  // Network status detection
+  useEffect(() => {
+    // Check initial network status
+    setIsOffline(!navigator.onLine)
+
+    // Set up event listeners for online/offline status
+    const handleOnline = () => {
+      setIsOffline(false)
+      console.log("Network connection restored")
+    }
+
+    const handleOffline = () => {
+      setIsOffline(true)
+      console.log("Network connection lost")
+    }
+
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+
+    // Load cached data if available
+    const cachedWeatherData = getFromCache<WeatherData>(CACHE_KEYS.WEATHER_DATA)
+    const cachedLocation = getFromCache<LocationData>(CACHE_KEYS.LOCATION)
+    const cachedLastUpdated = getFromCache<string>(CACHE_KEYS.LAST_UPDATED)
+
+    if (cachedWeatherData && cachedLocation && cachedLastUpdated) {
+      setWeatherData(cachedWeatherData)
+      setLocation(cachedLocation)
+      setLastUpdated(cachedLastUpdated)
+      
+      // Check for alerts based on cached data
+      const currentTemp = cachedWeatherData.current.temp_c
+      const conditionText = cachedWeatherData.current.condition.text.toLowerCase()
+
+      if (conditionText.includes("storm") || conditionText.includes("rain")) {
+        setShowAlert(true)
+        setAlertMessage("⚠️ Expecting rain or storm conditions!")
+      } else if (currentTemp < 5) {
+        setShowAlert(true)
+        setAlertMessage("⚠️ Temperature is below 5°C. Dress warmly!")
+      }
+      
+      // If cache is valid, don't show loading state
+      if (isCacheValid(cachedLastUpdated)) {
+        setLoading(false)
+      }
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  }, [])
 
   useEffect(() => {
     const fetchLocationAndWeather = async () => {
+      // If we're offline and have valid cached data, don't try to fetch
+      const cachedLastUpdated = getFromCache<string>(CACHE_KEYS.LAST_UPDATED)
+      if (isOffline) {
+        if (cachedLastUpdated) {
+          setLoading(false)
+          if (!isCacheValid(cachedLastUpdated)) {
+            setAlertMessage(`⚠️ You're offline. Showing weather data from ${new Date(cachedLastUpdated).toLocaleString()}`)
+            setShowAlert(true)
+          }
+          return
+        } else {
+          setError("You're offline and no cached weather data is available.")
+          setLoading(false)
+          return
+        }
+      }
+
       setLoading(true)
       setError(null)
       setShowAlert(false)
@@ -103,25 +211,38 @@ export default function LiveWeatherCard() {
           console.log("IP-based location successful:", currentCity, currentCountry)
         } catch (ipError: any) {
           console.error("Failed to get IP-based location:", ipError.message)
-          setError(
-            "Unable to determine your location. Please enable location services or check your internet connection.",
-          )
-          setLoading(false)
-          return
+          
+          // If we have cached location data, use that instead
+          const cachedLocation = getFromCache<LocationData>(CACHE_KEYS.LOCATION)
+          if (cachedLocation) {
+            currentLat = cachedLocation.lat
+            currentLon = cachedLocation.lon
+            currentCity = cachedLocation.city
+            currentCountry = cachedLocation.country
+            console.log("Using cached location data:", currentCity, currentCountry)
+          } else {
+            setError(
+              "Unable to determine your location. Please enable location services or check your internet connection.",
+            )
+            setLoading(false)
+            return
+          }
         }
       }
 
       if (currentLat !== null && currentLon !== null) {
-        setLocation({
+        const locationData = {
           lat: currentLat,
           lon: currentLon,
           city: currentCity || "Unknown City",
           country: currentCountry || "Unknown Country",
-        })
+        }
+        
+        setLocation(locationData)
 
         // Fetch weather data
         try {
-          if (!WEATHER_API_KEY || WEATHER_API_KEY === "YOUR_WEATHERAPI_KEY") {
+          if (!WEATHER_API_KEY || WEATHER_API_KEY === "37533df0fad946e3be974608250803") {
             throw new Error("Please replace 'YOUR_WEATHERAPI_KEY' with your actual WeatherAPI.com key.")
           }
           const weatherResponse = await fetch(
@@ -134,11 +255,19 @@ export default function LiveWeatherCard() {
           setWeatherData(data)
 
           // Update location with more precise data from weather API
-          setLocation((prev) => ({
-            ...(prev || { lat: currentLat!, lon: currentLon!, city: "", country: "" }),
+          const updatedLocation = {
+            ...(locationData),
             city: data.location.name,
             country: data.location.country,
-          }))
+          }
+          setLocation(updatedLocation)
+          
+          // Save to cache
+          const currentTimestamp = new Date().toISOString()
+          saveToCache(CACHE_KEYS.WEATHER_DATA, data)
+          saveToCache(CACHE_KEYS.LOCATION, updatedLocation)
+          saveToCache(CACHE_KEYS.LAST_UPDATED, currentTimestamp)
+          setLastUpdated(currentTimestamp)
 
           // Check for alerts
           const currentTemp = data.current.temp_c
@@ -153,7 +282,19 @@ export default function LiveWeatherCard() {
           }
         } catch (weatherError: any) {
           console.error("Failed to fetch weather data:", weatherError.message)
-          setError(`Failed to fetch weather data: ${weatherError.message}. Please try again later.`)
+          
+          // If we have cached weather data, use that instead
+          const cachedWeatherData = getFromCache<WeatherData>(CACHE_KEYS.WEATHER_DATA)
+          const cachedLastUpdated = getFromCache<string>(CACHE_KEYS.LAST_UPDATED)
+          
+          if (cachedWeatherData && cachedLastUpdated) {
+            setWeatherData(cachedWeatherData)
+            setLastUpdated(cachedLastUpdated)
+            setAlertMessage(`⚠️ Failed to update weather data. Showing data from ${new Date(cachedLastUpdated).toLocaleString()}`)
+            setShowAlert(true)
+          } else {
+            setError(`Failed to fetch weather data: ${weatherError.message}. Please try again later.`)
+          }
         } finally {
           setLoading(false)
         }
@@ -161,7 +302,7 @@ export default function LiveWeatherCard() {
     }
 
     fetchLocationAndWeather()
-  }, [])
+  }, [isOffline])
 
   // GSAP Animations
   useEffect(() => {
@@ -201,7 +342,7 @@ export default function LiveWeatherCard() {
           repeat: 3, // Shake 3 times (left-right-left-right-left-right)
           yoyo: true,
           ease: "power1.inOut",
-          onComplete: () => gsap.set(alertRef.current, { x: 0 }), // Reset position after animation
+          onComplete: function() { gsap.set(alertRef.current, { x: 0 }); }, // Reset position after animation
         },
       )
     }
@@ -255,9 +396,20 @@ export default function LiveWeatherCard() {
             {alertMessage}
           </div>
         )}
+        {isOffline && (
+          <div className="bg-yellow-500/30 backdrop-blur-sm border border-yellow-400/20 p-2 rounded-lg text-center font-bold text-sm flex items-center justify-center gap-2 mb-3">
+            <WifiOff className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+            You are offline. Using cached data.
+          </div>
+        )}
         <CardTitle className="text-xl font-bold text-center">
           {weatherLocation.name}, {weatherLocation.country}
         </CardTitle>
+        {lastUpdated && (
+          <p className="text-xs text-center mt-1 opacity-70">
+            Last updated: {new Date(lastUpdated).toLocaleString()}
+          </p>
+        )}
       </CardHeader>
       <CardContent className="grid gap-4">
         {/* Current Weather */}
